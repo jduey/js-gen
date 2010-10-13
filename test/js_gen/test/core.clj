@@ -157,9 +157,21 @@
 		   (run out-str
 				(js-delete '(delete MyObj) out-str))))
 
-(is (= '("new MyObj(x, 1, z)")
-		   (run out-str
-				(js-new '(new MyObj x 1 z) out-str))))
+(is (= ["new MyObj(x, 1, z)"]
+       (run out-str
+            (js-new '(new MyObj x 1 z) out-str))))
+
+(is (= ["for(var property in object)\n{\nproperty.object = 5;\nstmt(property.object);\n}\n"]
+      (run out-str
+           (js-statement '(for [in (var property) object]
+                            (= (. property object) 5)
+                            (stmt (. property object))) out-str))))
+
+(is (= ["for(property in object)\n{\nproperty.object = 5;\nstmt(property.object);\n}\n"]
+      (run out-str
+           (js-statement '(for [in property object]
+                            (= (. property object) 5)
+                            (stmt (. property object))) out-str))))
 
 (is (= '("foo();")
 		   (run out-str
@@ -319,4 +331,4 @@
 (defmacro jquery [selector & body]
   (list* '. (list 'jQuery selector) body))
 
-
+(run-tests)
